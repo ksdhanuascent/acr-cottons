@@ -57,12 +57,12 @@ export function Hero() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#F8F5EE] border-b border-[#DFD7C7] py-10 sm:py-16 lg:py-24">
+    <section className="relative overflow-hidden bg-[#F8F5EE] border-b border-[#DFD7C7] py-6 sm:py-8 lg:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center">
           
           {/* Left Editorial Narrative & Metrics */}
-          <div className="lg:col-span-6 space-y-7 sm:space-y-8">
+          <div className="lg:col-span-6 space-y-4 sm:space-y-6">
             
             {/* Handcrafted Atelier Eyebrow */}
             <div className="flex items-center gap-2.5 select-none">
@@ -73,21 +73,21 @@ export function Hero() {
             </div>
 
             {/* Headline */}
-            <h1 className="font-serif text-3xl sm:text-5xl lg:text-[4.2rem] font-normal leading-[1.12] tracking-tight text-[#332C26]">
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-[3.45rem] xl:text-[3.85rem] font-normal leading-[1.1] tracking-tight text-[#332C26]">
               Woven for<br />
               <span className="italic font-normal font-serif text-[#B89A52]">everyday luxury.</span>
             </h1>
 
             {/* Subtext */}
-            <p className="text-sm sm:text-lg text-[#6E6459] max-w-lg leading-relaxed font-light">
+            <p className="text-xs sm:text-base lg:text-[1.05rem] text-[#6E6459] max-w-lg leading-relaxed font-light">
               Crafted in Erode, the Textile Valley of South India. Artisanal bedspreads and matching pillow suites engineered with pure combed cotton to bring serene, boutique hotel elegance into your bedroom.
             </p>
 
             {/* Call to Actions */}
-            <div className="flex flex-wrap items-center gap-3.5 sm:gap-6 pt-1 sm:pt-2">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-5 pt-0.5 sm:pt-1">
               <Link
                 href="/shop"
-                className="inline-flex items-center gap-2.5 sm:gap-3 bg-[#332C26] text-[#F8F5EE] px-6 py-3 sm:px-8 sm:py-3.5 rounded-full text-xs uppercase tracking-widest font-semibold hover:bg-[#B89A52] transition-all duration-300 shadow-md group"
+                className="inline-flex items-center gap-2.5 sm:gap-3 bg-[#332C26] text-[#F8F5EE] px-5 py-2.5 sm:px-7 sm:py-3 rounded-full text-xs uppercase tracking-widest font-semibold hover:bg-[#B89A52] transition-all duration-300 shadow-md group"
               >
                 <span>Explore Collection</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -101,13 +101,13 @@ export function Hero() {
             </div>
 
             {/* Trust Metrics Bar */}
-            <div className="pt-5 sm:pt-8 grid grid-cols-2 gap-4 sm:gap-8 border-t border-[#DFD7C7] max-w-md">
+            <div className="pt-3.5 sm:pt-5 grid grid-cols-2 gap-4 sm:gap-6 border-t border-[#DFD7C7] max-w-md">
               <div>
                 <span className="block text-[10px] uppercase tracking-wider text-[#6E6459] mb-1 font-medium flex items-center gap-1.5">
                   <Award className="w-3.5 h-3.5 text-[#B89A52]" />
                   Artisanal Heritage
                 </span>
-                <span className="font-serif text-xl sm:text-3xl text-[#332C26] font-normal">Erode, TN</span>
+                <span className="font-serif text-lg sm:text-2xl text-[#332C26] font-normal">Erode, TN</span>
                 <span className="block text-[11px] text-[#6E6459] mt-0.5">Textile Valley of South India</span>
               </div>
               <div>
@@ -115,7 +115,7 @@ export function Hero() {
                   <Sparkles className="w-3.5 h-3.5 text-[#B89A52]" />
                   Thread Purity
                 </span>
-                <span className="font-serif text-xl sm:text-3xl text-[#332C26] font-normal">400 TC</span>
+                <span className="font-serif text-lg sm:text-2xl text-[#332C26] font-normal">400 TC</span>
                 <span className="block text-[11px] text-[#6E6459] mt-0.5">Zero Pilling Combed Staple</span>
               </div>
             </div>
@@ -123,7 +123,7 @@ export function Hero() {
           </div>
 
           {/* Right Composition Image Frame with Synchronized Crossfade & Subtle Controls */}
-          <div className="lg:col-span-6 flex flex-col items-center py-4 sm:py-6">
+          <div className="lg:col-span-6 flex flex-col items-center py-1 sm:py-2">
             <div
               className="relative w-full flex justify-center items-center"
               onMouseMove={handleMouseMove}
@@ -132,7 +132,7 @@ export function Hero() {
             >
               {/* Main Tailored Bedspread Card with Subtle Architectural Inset Border */}
               <div
-                className="relative w-full max-w-sm sm:max-w-lg h-[400px] sm:h-[580px] rounded-tl-[2.5rem] rounded-br-[2.5rem] sm:rounded-tl-[3.5rem] sm:rounded-br-[3.5rem] rounded-tr-2xl rounded-bl-2xl overflow-hidden shadow-2xl bg-[#E9E1D3] border border-[#B89A52]/40 ring-1 ring-[#DFD7C7] transition-transform duration-500 ease-out will-change-transform"
+                className="relative w-full max-w-[320px] sm:max-w-md lg:max-w-[470px] h-[330px] sm:h-[440px] lg:h-[480px] rounded-tl-[2.25rem] rounded-br-[2.25rem] sm:rounded-tl-[3rem] sm:rounded-br-[3rem] rounded-tr-2xl rounded-bl-2xl overflow-hidden shadow-2xl bg-[#E9E1D3] border border-[#B89A52]/40 ring-1 ring-[#DFD7C7] transition-transform duration-500 ease-out will-change-transform"
                 style={{
                   transform: `rotateY(${mousePos.x}deg) rotateX(${mousePos.y}deg)`,
                 }}
@@ -156,8 +156,8 @@ export function Hero() {
                   </div>
                 ))}
 
-                {/* Floating Set Breakdown Tag at bottom-right (25% opacity reduction) */}
-                <div className="absolute bottom-4 right-4 sm:bottom-5 sm:right-5 z-20 bg-[#332C26]/65 backdrop-blur-md text-[#E9E1D3] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] tracking-wider uppercase font-medium border border-[#B89A52]/20 shadow-sm">
+                {/* Floating Set Breakdown Tag at bottom-right (Hidden on mobile) */}
+                <div className="hidden sm:block absolute bottom-4 right-4 sm:bottom-5 sm:right-5 z-20 bg-[#332C26]/65 backdrop-blur-md text-[#E9E1D3] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] tracking-wider uppercase font-medium border border-[#B89A52]/20 shadow-sm">
                   1 Bedspread + 2 Pillow Covers
                 </div>
 
@@ -168,7 +168,7 @@ export function Hero() {
               </div>
 
               {/* Circular Rotating Watermark Badge with Exact Storefront Logo Medallion */}
-              <div className="hidden sm:flex absolute -top-4 -right-4 w-36 h-36 rounded-full items-center justify-center pointer-events-none select-none z-30">
+              <div className="hidden sm:flex absolute -top-4 -right-4 w-32 h-32 lg:w-34 lg:h-34 rounded-full items-center justify-center pointer-events-none select-none z-30">
                 <svg className="w-full h-full animate-spin-slow" viewBox="0 0 100 100">
                   <path
                     id="circlePath"
@@ -181,7 +181,7 @@ export function Hero() {
                     </textPath>
                   </text>
                 </svg>
-                <div className="absolute w-18 h-18 rounded-full overflow-hidden border-2 border-[#B89A52]/70 shadow-xl bg-[#332C26] p-1 flex items-center justify-center pointer-events-auto">
+                <div className="absolute w-16 h-16 rounded-full overflow-hidden border-2 border-[#B89A52]/70 shadow-xl bg-[#332C26] p-1 flex items-center justify-center pointer-events-auto">
                   <div className="relative w-full h-full">
                     <Image
                       src="/assets/brand/shoplogo_circular.png"
@@ -196,8 +196,8 @@ export function Hero() {
               </div>
 
               {/* Floating Macro Detail Inset Card (Bottom-Left) - Synchronized with Active Design */}
-              <div className="absolute -bottom-3 -left-1 sm:-bottom-4 sm:left-2 w-44 sm:w-60 rounded-xl sm:rounded-2xl overflow-hidden border border-[#B89A52]/40 shadow-2xl bg-[#E9E1D3] z-20">
-                <div className="relative h-24 sm:h-32">
+              <div className="absolute -bottom-2.5 -left-1 sm:-bottom-3.5 sm:left-2 w-40 sm:w-52 lg:w-56 rounded-xl sm:rounded-2xl overflow-hidden border border-[#B89A52]/40 shadow-2xl bg-[#E9E1D3] z-20">
+                <div className="relative h-20 sm:h-28">
                   {heroProducts.map((product, idx) => (
                     <div
                       key={`macro-${product.id}`}
@@ -216,7 +216,7 @@ export function Hero() {
                       />
                     </div>
                   ))}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#332C26]/95 via-[#332C26]/50 to-transparent flex flex-col justify-end p-2.5 sm:p-3.5 text-[#F8F5EE] z-20 pointer-events-none">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#332C26]/95 via-[#332C26]/50 to-transparent flex flex-col justify-end p-2.5 sm:p-3 text-[#F8F5EE] z-20 pointer-events-none">
                     <span className="text-[8.5px] sm:text-[10px] tracking-widest uppercase font-semibold text-[#F8F5EE]">
                       Weave Architecture
                     </span>
@@ -230,7 +230,7 @@ export function Hero() {
             </div>
 
             {/* Subtle Minimalist Low-Opacity Carousel Arrow Controls Under Hero Image */}
-            <div className="flex items-center justify-center gap-3 pt-5 sm:pt-7 z-10 select-none">
+            <div className="flex items-center justify-center gap-2.5 pt-3 sm:pt-4 z-10 select-none">
               <button
                 onClick={handlePrev}
                 aria-label="Previous Design Edition"
