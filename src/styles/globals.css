@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-bg: #F8F5EE;
+  --color-brand-card: #E9E1D3;
+  --color-brand-card-hover: #E3D9C9;
+  --color-brand-gold: #B89A52;
+  --color-brand-gold-dark: #9C803E;
+  --color-brand-gold-light: #CFB470;
+  --color-brand-dark: #332C26;
+  --color-brand-muted: #6E6459;
+  --color-brand-border: #DFD7C7;
+  --color-brand-border-light: #EDE7DC;
+}
+
+:root {
+  --background: #F8F5EE;
+  --foreground: #332C26;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #F8F5EE;
+  color: #332C26;
+}
+
+body {
+  background-color: #F8F5EE;
+  color: #332C26;
+  min-height: 100vh;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: #B89A52;
+  color: #F8F5EE;
+}
+
+/* Custom scrollbars for clean boutique look */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F5EE;
+}
+::-webkit-scrollbar-thumb {
+  background: #DFD7C7;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B89A52;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 24s linear infinite;
+}

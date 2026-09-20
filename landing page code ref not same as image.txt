@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VERDE — Earth in Every Thread</title>
+
+  <!-- Google Fonts: Editorial Serif + Modern Grotesk + Classical Roman -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS Engine -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            verde: {
+              bg: '#F9F8F5',
+              dark: '#111812',
+              forest: '#1A2E22',
+              accent: '#2D3E2E',
+              card: '#F2EFEB',
+              muted: '#4E564F',
+              subtle: '#6B726A',
+              border: '#E5E5E0',
+              badge: '#EAECE6',
+            }
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            brand: ['Cinzel', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::selection {
+      background-color: #2D3E2E;
+      color: #F9F8F5;
+    }
+    .text-balance {
+      text-wrap: balance;
+    }
+  </style>
+</head>
+<body class="bg-verde-bg text-verde-dark font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- Announcement Bar -->
+  <aside class="bg-verde-forest text-white/90 text-[11px] uppercase tracking-[0.25em] py-2 text-center font-medium">
+    Capsule 01: Pre-Orders Open &bull; Complimentary Carbon-Neutral Worldwide Shipping
+  </aside>
+
+  <!-- Header / Navigation -->
+  <header class="sticky top-0 z-50 bg-verde-bg/90 backdrop-blur-md border-b border-verde-border">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 py-5 flex items-center justify-between">
+      <a href="#" class="font-brand text-2xl font-bold tracking-[0.28em] text-verde-forest select-none">
+        VERDE
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center space-x-10 text-xs font-medium uppercase tracking-[0.2em] text-verde-muted">
+        <a href="#collection" class="hover:text-verde-dark transition-colors duration-200">Collection</a>
+        <a href="#materials" class="hover:text-verde-dark transition-colors duration-200">Materials</a>
+        <a href="#story" class="hover:text-verde-dark transition-colors duration-200">Philosophy</a>
+        <a href="#impact" class="hover:text-verde-dark transition-colors duration-200">Impact</a>
+      </nav>
+
+      <!-- Action Bar -->
+      <div class="flex items-center space-x-5 text-verde-dark">
+        <button id="search-btn" aria-label="Search" class="p-1.5 hover:opacity-60 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"/>
+          </svg>
+        </button>
+        <button id="cart-btn" aria-label="Bag" class="p-1.5 hover:opacity-60 transition relative">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4L5 9Z"/>
+          </svg>
+          <span class="absolute top-0 right-0 w-2 h-2 bg-verde-forest rounded-full"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex-grow">
+    <section class="max-w-7xl mx-auto px-6 sm:px-8 pt-10 pb-20 lg:py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      
+      <!-- Left Narrative & Metrics -->
+      <div class="lg:col-span-6 space-y-8">
+        <div class="inline-flex items-center gap-2 border border-verde-accent/20 rounded-full px-3.5 py-1 text-[11px] tracking-widest uppercase font-semibold text-verde-accent bg-verde-badge/80">
+          <span class="w-1.5 h-1.5 rounded-full bg-verde-accent animate-pulse"></span>
+          100% Recycled & Regenerative
+        </div>
+
+        <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl font-normal leading-[1.08] tracking-tight text-verde-dark text-balance">
+          Earth in<br />every thread.
+        </h1>
+
+        <p class="text-base sm:text-lg text-verde-muted max-w-lg leading-relaxed font-light">
+          A minimalist wardrobe manufactured entirely from circular textiles and botanical deadstock. Uncompromising tailoring, zero environmental extraction.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-5 pt-2">
+          <a href="#collection" class="inline-flex items-center gap-3 bg-verde-forest text-white px-7 py-3.5 rounded-full text-xs uppercase tracking-widest font-semibold hover:bg-verde-accent transition shadow-md">
+            Explore Collection 
+            <span class="text-xs">&rarr;</span>
+          </a>
+          <a href="#story" class="text-xs uppercase tracking-widest font-semibold text-verde-forest underline underline-offset-8 hover:text-black transition">
+            View Lookbook
+          </a>
+        </div>
+
+        <!-- Metrics Display -->
+        <div class="pt-8 grid grid-cols-2 gap-8 border-t border-verde-border max-w-sm">
+          <div>
+            <span class="block text-[11px] uppercase tracking-wider text-verde-subtle mb-1">Water Conserved</span>
+            <span class="font-serif text-3xl text-verde-forest">1.2M+ L</span>
+          </div>
+          <div>
+            <span class="block text-[11px] uppercase tracking-wider text-verde-subtle mb-1">Textiles Diverted</span>
+            <span class="font-serif text-3xl text-verde-forest">50,000 kg</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Composition Image Frame -->
+      <div class="lg:col-span-6 relative flex justify-center items-center">
+        <!-- Main Image Container -->
+        <div class="relative w-full max-w-md h-[540px] rounded-3xl overflow-hidden shadow-2xl bg-stone-300">
+          <img 
+            src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80" 
+            alt="Editorial portrait in sustainable natural weave" 
+            class="w-full h-full object-cover select-none"
+            loading="eager"
+          />
+          <div class="absolute top-5 left-5 bg-white/85 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-semibold text-black shadow-sm">
+            • Capsule 01 / SS
+          </div>
+        </div>
+
+        <!-- Overlay Detail Card -->
+        <div class="absolute -bottom-6 -left-4 sm:left-4 w-56 rounded-2xl overflow-hidden border-2 border-white shadow-xl bg-white">
+          <div class="relative h-32">
+            <img 
+              src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=500&q=80" 
+              alt="Close-up macro of organic linen texture" 
+              class="w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-3 text-white">
+              <span class="text-[9px] tracking-widest uppercase font-semibold text-white/70">Origin</span>
+              <span class="text-xs font-serif font-medium">Post-Consumer Flax</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Collection Showcase Section -->
+    <section id="collection" class="border-t border-verde-border py-24 bg-white">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-14">
+          <div>
+            <span class="text-[11px] uppercase tracking-[0.2em] text-verde-subtle block mb-2">Sustainable Staples</span>
+            <h2 class="font-serif text-3xl sm:text-4xl text-verde-dark">The Low-Impact Capsule</h2>
+          </div>
+          <p class="text-sm text-verde-muted max-w-xs font-light">
+            Individually numbered, cut with zero material run-off, and engineered for infinite circular recyclability.
+          </p>
+        </div>
+
+        <!-- Product Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+          <article class="group cursor-pointer">
+            <div class="w-full h-[420px] rounded-2xl overflow-hidden bg-verde-bg mb-4 relative">
+              <img 
+                src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80" 
+                alt="Botanical Utility Coat" 
+                class="w-full h-full object-cover group-hover:scale-105 transition duration-700 ease-out"
+              />
+              <span class="absolute top-4 right-4 bg-white/90 text-verde-dark text-[10px] font-semibold tracking-widest uppercase px-2.5 py-1 rounded-full">
+                Zero Dye
+              </span>
+            </div>
+            <div class="flex justify-between items-baseline">
+              <h3 class="text-base font-medium text-verde-dark">Botanical Utility Coat</h3>
+              <span class="font-serif text-verde-forest text-sm">$280</span>
+            </div>
+            <p class="text-xs text-verde-subtle mt-1 font-light">Undyed Industrial Hemp &bull; Relaxed Fit</p>
+          </article>
+
+          <article class="group cursor-pointer">
+            <div class="w-full h-[420px] rounded-2xl overflow-hidden bg-verde-bg mb-4 relative">
+              <img 
+                src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800&q=80" 
+                alt="Pleated Wide Trouser" 
+                class="w-full h-full object-cover group-hover:scale-105 transition duration-700 ease-out"
+              />
+              <span class="absolute top-4 right-4 bg-white/90 text-verde-dark text-[10px] font-semibold tracking-widest uppercase px-2.5 py-1 rounded-full">
+                Deadstock
+              </span>
+            </div>
+            <div class="flex justify-between items-baseline">
+              <h3 class="text-base font-medium text-verde-dark">Pleated Wide Trouser</h3>
+              <span class="font-serif text-verde-forest text-sm">$190</span>
+            </div>
+            <p class="text-xs text-verde-subtle mt-1 font-light">Salvaged Flax Linen &bull; High Rise</p>
+          </article>
+
+          <article class="group cursor-pointer">
+            <div class="w-full h-[420px] rounded-2xl overflow-hidden bg-verde-bg mb-4 relative">
+              <img 
+                src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800&q=80" 
+                alt="Zero-Waste Rib Knit" 
+                class="w-full h-full object-cover group-hover:scale-105 transition duration-700 ease-out"
+              />
+              <span class="absolute top-4 right-4 bg-white/90 text-verde-dark text-[10px] font-semibold tracking-widest uppercase px-2.5 py-1 rounded-full">
+                Regenerative
+              </span>
+            </div>
+            <div class="flex justify-between items-baseline">
+              <h3 class="text-base font-medium text-verde-dark">Zero-Waste Rib Knit</h3>
+              <span class="font-serif text-verde-forest text-sm">$165</span>
+            </div>
+            <p class="text-xs text-verde-subtle mt-1 font-light">Organic Farm Cotton &bull; Seamless</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Material Science / Philosophy -->
+    <section id="materials" class="py-24 bg-verde-card border-t border-verde-border">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-5 space-y-6">
+          <span class="text-[11px] uppercase tracking-[0.25em] text-verde-subtle font-semibold">Material Integrity</span>
+          <h2 class="font-serif text-4xl text-verde-dark">Engineered to return safely to the soil.</h2>
+          <p class="text-sm text-verde-muted leading-relaxed font-light">
+            Every stitch, label, button, and fiber is formulated without plastic microfibers or petroleum bindings. When a garment completes its generational lifecycle, it breaks down cleanly into organic compost.
+          </p>
+          <ul class="space-y-4 pt-4 text-xs tracking-wider uppercase font-medium text-verde-dark">
+            <li class="flex items-center gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-verde-accent"></span>
+              OEKO-TEX Class I Non-Toxic Certified
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-verde-accent"></span>
+              Zero Micro-Plastic Water Runoff
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-verde-accent"></span>
+              Corozo Nut Buttons & Organic Threading
+            </li>
+          </ul>
+        </div>
+        <div class="lg:col-span-7 grid grid-cols-2 gap-4">
+          <img class="w-full h-80 object-cover rounded-2xl shadow-sm" src="https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?auto=format&fit=crop&w=600&q=80" alt="Botanical texture">
+          <img class="w-full h-80 object-cover rounded-2xl shadow-sm mt-8" src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=600&q=80" alt="Linen fashion detail">
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-verde-dark text-[#D5D8D3] pt-16 pb-12 border-t border-black/20">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 grid grid-cols-1 md:grid-cols-12 gap-12 pb-14 border-b border-white/10">
+      <div class="md:col-span-5 space-y-4">
+        <span class="font-brand text-2xl font-bold tracking-[0.25em] text-white block">VERDE</span>
+        <p class="text-xs text-stone-400 max-w-sm leading-relaxed font-light">
+          An architectural approach to sustainable everyday wear. Founded on the principle of biological stewardship and closed-loop material cycles.
+        </p>
+      </div>
+
+      <div class="md:col-span-7 grid grid-cols-3 gap-6 text-xs font-light">
+        <div>
+          <span class="font-medium text-white uppercase tracking-widest text-[10px] block mb-3">Index</span>
+          <ul class="space-y-2 text-stone-400">
+            <li><a href="#" class="hover:text-white transition">Catalog</a></li>
+            <li><a href="#" class="hover:text-white transition">Lookbook</a></li>
+            <li><a href="#" class="hover:text-white transition">Stockists</a></li>
+          </ul>
+        </div>
+        <div>
+          <span class="font-medium text-white uppercase tracking-widest text-[10px] block mb-3">Audits</span>
+          <ul class="space-y-2 text-stone-400">
+            <li><a href="#" class="hover:text-white transition">Supply Chain</a></li>
+            <li><a href="#" class="hover:text-white transition">LCA Reports</a></li>
+            <li><a href="#" class="hover:text-white transition">Circularity</a></li>
+          </ul>
+        </div>
+        <div>
+          <span class="font-medium text-white uppercase tracking-widest text-[10px] block mb-3">Studio</span>
+          <ul class="space-y-2 text-stone-400">
+            <li><a href="#" class="hover:text-white transition">Contact</a></li>
+            <li><a href="#" class="hover:text-white transition">Careers</a></li>
+            <li><a href="#" class="hover:text-white transition">Press Kit</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 pt-8 flex flex-col sm:flex-row justify-between items-center text-[10px] text-stone-500 tracking-wider">
+      <span>&copy; 2026 VERDE STUDIO INC. ALL RIGHTS RESERVED.</span>
+      <div class="flex space-x-6 mt-4 sm:mt-0">
+        <a href="#" class="hover:text-stone-300 transition">PRIVACY POLICY</a>
+        <a href="#" class="hover:text-stone-300 transition">TERMS OF SERVICE</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
