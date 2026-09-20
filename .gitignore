@@ -24,6 +24,8 @@ dist/
 *.pptx
 scratch/
 .gemini/
+poster.png
+scripts/
 
 # Debug logs and telemetry
 npm-debug.log*

@@ -3,13 +3,14 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Check, Truck, ShieldCheck, RefreshCw, ZoomIn, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Star, Check, Truck, ShieldCheck, RefreshCw, ZoomIn, ShoppingBag, ArrowRight, AlertCircle } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { PRODUCTS } from '@/lib/catalog';
 import { useStore } from '@/lib/store';
+import { validateReview, checkRateLimit } from '@/lib/moderation';
 
 export function ProductClientView({ product }: { product: Product }) {
-  const { addToCart, user, setAuthModalOpen, setCheckoutModalOpen, getProductReviews } = useStore();
+  const { addToCart, user, setAuthModalOpen, setCheckoutModalOpen, getProductReviews, addReview } = useStore();
   const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0]?.name || 'Standard');
   const [quantity, setQuantity] = useState(1);
   const [pincode, setPincode] = useState('');
@@ -17,8 +18,64 @@ export function ProductClientView({ product }: { product: Product }) {
   const [isHovering, setIsHovering] = useState(false);
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 });
 
+  // Review Form States
+  const [isWritingReview, setIsWritingReview] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewTitle, setReviewTitle] = useState('');
+  const [reviewComment, setReviewComment] = useState('');
+  const [guestName, setGuestName] = useState('');
+  const [guestCity, setGuestCity] = useState('');
+  const [moderationError, setModerationError] = useState<string | null>(null);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
   const reviews = getProductReviews(product.id);
   const bedspreadSets = PRODUCTS.filter((p) => p.category === 'bedspread-sets');
+
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setModerationError(null);
+
+    // Rate limit check (cooldown 10s)
+    if (!checkRateLimit('review', 10)) {
+      setModerationError('Please wait 10 seconds before posting another review.');
+      return;
+    }
+
+    const reviewerName = user ? user.name : (guestName.trim() || 'Verified Patron');
+    const reviewerCity = user
+      ? (user.addresses?.[0]?.city ? `${user.addresses[0].city}, ${user.addresses[0].state}` : 'Erode, TN')
+      : (guestCity.trim() || 'Tamil Nadu');
+
+    const validation = validateReview({
+      name: reviewerName,
+      city: reviewerCity,
+      title: reviewTitle.trim(),
+      comment: reviewComment.trim(),
+      rating: reviewRating,
+    });
+
+    if (!validation.allowed) {
+      setModerationError(validation.reason || 'Review validation failed.');
+      return;
+    }
+
+    addReview({
+      productId: product.id,
+      userName: reviewerName,
+      userCity: reviewerCity,
+      rating: reviewRating,
+      title: reviewTitle.trim(),
+      comment: reviewComment.trim(),
+      verifiedPurchase: true,
+    });
+    setReviewTitle('');
+    setReviewComment('');
+    setGuestName('');
+    setGuestCity('');
+    setIsWritingReview(false);
+    setReviewSubmitted(true);
+    setTimeout(() => setReviewSubmitted(false), 4000);
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -161,7 +218,7 @@ export function ProductClientView({ product }: { product: Product }) {
                   ))}
                 </div>
                 <span className="text-sm font-semibold text-[#332C26]">{product.rating}</span>
-                <span className="text-xs text-[#6E6459]">({product.reviewCount} verified reviews)</span>
+                <span className="text-xs text-[#6E6459]">({reviews.length} verified reviews)</span>
               </div>
             </div>
 
@@ -312,9 +369,152 @@ export function ProductClientView({ product }: { product: Product }) {
 
         {/* Verified Reviews Section for this Product */}
         <div className="mt-16 pt-12 border-t border-[#DFD7C7]">
-          <h2 className="font-serif text-2xl text-[#332C26] mb-6">
-            Verified Patron Reviews ({reviews.length})
-          </h2>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+              <h2 className="font-serif text-2xl sm:text-3xl text-[#332C26]">
+                Verified Patron Reviews ({reviews.length})
+              </h2>
+              <p className="text-xs text-[#6E6459] mt-1">
+                Authentic testimonials from connoisseurs and interior designers across India.
+              </p>
+            </div>
+            <button
+              onClick={() => setIsWritingReview(!isWritingReview)}
+              className="inline-flex items-center justify-center gap-1.5 py-2.5 px-6 rounded-full bg-[#332C26] text-[#F8F5EE] hover:bg-[#B89A52] text-xs uppercase tracking-wider font-semibold transition cursor-pointer self-start sm:self-auto shadow-sm"
+            >
+              {isWritingReview ? 'Close Form' : '+ Write a Review'}
+            </button>
+          </div>
+
+          {/* In-place Review Submission Form */}
+          {isWritingReview && (
+            <div className="mb-10 p-6 bg-[#E9E1D3]/70 rounded-2xl border border-[#B89A52]/40 max-w-2xl animate-in fade-in duration-200">
+              <h3 className="font-serif text-base text-[#332C26] mb-3">Share Your Atelier Experience</h3>
+              <form onSubmit={handleReviewSubmit} className="space-y-4">
+                {user ? (
+                  <div className="text-xs text-[#6E6459] flex items-center justify-between p-2.5 bg-[#F8F5EE]/60 rounded-xl">
+                    <span>Reviewing as: <strong className="text-[#332C26]">{user.name}</strong></span>
+                    <span className="text-[#B89A52] font-semibold text-[11px]">✓ Verified Patron Account</span>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#332C26] mb-1">
+                          Your Name
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Rajesh Kumar"
+                          value={guestName}
+                          onChange={(e) => setGuestName(e.target.value)}
+                          required
+                          className="w-full bg-[#F8F5EE] border border-[#DFD7C7] rounded-xl px-3.5 py-2 text-xs text-[#332C26] outline-none font-sans"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#332C26] mb-1">
+                          City / Region
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Erode, TN"
+                          value={guestCity}
+                          onChange={(e) => setGuestCity(e.target.value)}
+                          required
+                          className="w-full bg-[#F8F5EE] border border-[#DFD7C7] rounded-xl px-3.5 py-2 text-xs text-[#332C26] outline-none font-sans"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-[#6E6459]">
+                      <span>Writing as a Guest Patron</span>
+                      <button
+                        type="button"
+                        onClick={() => setAuthModalOpen(true)}
+                        className="text-[#B89A52] underline hover:text-[#332C26] cursor-pointer"
+                      >
+                        Sign In to use your account profile
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-[#332C26]">Rating:</span>
+                  <div className="flex gap-1 text-[#B89A52]">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewRating(star)}
+                        className="cursor-pointer hover:scale-110 transition p-0.5"
+                      >
+                        <Star className={`w-5 h-5 ${star <= reviewRating ? 'fill-current' : 'stroke-current fill-none'}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#332C26] mb-1">
+                    Review Headline
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Pure five-star hotel luxury and soothing cooling comfort"
+                    value={reviewTitle}
+                    onChange={(e) => setReviewTitle(e.target.value)}
+                    required
+                    className="w-full bg-[#F8F5EE] border border-[#DFD7C7] rounded-xl px-3.5 py-2 text-xs text-[#332C26] outline-none font-sans"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#332C26] mb-1">
+                    Your Review
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Describe the weave texture, cooling comfort, durability, and hand feel..."
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    required
+                    className="w-full bg-[#F8F5EE] border border-[#DFD7C7] rounded-xl p-3 text-xs text-[#332C26] outline-none font-sans resize-none"
+                  />
+                </div>
+
+                {moderationError && (
+                  <div className="p-3 bg-red-100 border border-red-200 text-red-800 text-xs rounded-xl flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{moderationError}</span>
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <button
+                    type="submit"
+                    className="py-3 px-6 bg-[#332C26] text-[#F8F5EE] hover:bg-[#B89A52] rounded-full text-xs uppercase tracking-wider font-semibold transition cursor-pointer shadow-md"
+                  >
+                    Publish Atelier Review
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsWritingReview(false)}
+                    className="py-3 px-5 border border-[#DFD7C7] text-[#6E6459] hover:text-[#332C26] rounded-full text-xs uppercase tracking-wider font-semibold transition cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {reviewSubmitted && (
+            <div className="mb-8 p-3.5 bg-emerald-100 text-emerald-800 text-xs rounded-xl font-medium max-w-2xl">
+              ✓ Thank you! Your verified patron review has been published and added to this edition.
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {reviews.map((rev) => (
               <div key={rev.id} className="p-6 bg-[#E9E1D3]/50 rounded-2xl border border-[#DFD7C7] space-y-2.5">

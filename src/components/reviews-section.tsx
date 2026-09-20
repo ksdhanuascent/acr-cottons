@@ -74,14 +74,14 @@ export function ReviewsSection() {
           </div>
         </div>
 
-        {/* Reviews Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Reviews Grid (Desktop) & Horizontal Snap-Swipe Track (Mobile) */}
+        <div className="flex md:grid md:grid-cols-3 overflow-x-auto snap-x snap-mandatory gap-4 sm:gap-6 pb-4 sm:pb-0 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
           {reviews.slice(0, 6).map((rev) => (
             <div
               key={rev.id}
-              className="bg-[#E9E1D3]/50 rounded-2xl p-6 border border-[#DFD7C7] flex flex-col justify-between space-y-4 hover:border-[#B89A52]/50 transition-colors"
+              className="w-[82vw] max-w-[320px] md:w-auto md:max-w-none flex-shrink-0 snap-center bg-[#E9E1D3]/50 rounded-2xl p-5 sm:p-6 border border-[#DFD7C7] flex flex-col justify-between space-y-3.5 sm:space-y-4 hover:border-[#B89A52]/50 transition-colors shadow-xs"
             >
-              <div className="space-y-2.5">
+              <div className="space-y-2 sm:space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div className="flex text-[#B89A52]">
                     {[...Array(rev.rating)].map((_, i) => (
@@ -91,15 +91,15 @@ export function ReviewsSection() {
                   <span className="text-[10px] text-[#6E6459]">{rev.createdAt}</span>
                 </div>
 
-                <h3 className="font-serif text-base font-medium text-[#332C26]">
+                <h3 className="font-serif text-sm sm:text-base font-medium text-[#332C26]">
                   {rev.title}
                 </h3>
-                <p className="text-xs text-[#6E6459] leading-relaxed font-light">
+                <p className="text-[11px] sm:text-xs text-[#6E6459] leading-relaxed font-light line-clamp-4 md:line-clamp-none">
                   {rev.comment}
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-[#DFD7C7]/80 flex items-center justify-between">
+              <div className="pt-2.5 sm:pt-3 border-t border-[#DFD7C7]/80 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-semibold text-[#332C26] block">
                     {rev.userName}
@@ -109,7 +109,7 @@ export function ReviewsSection() {
                   </span>
                 </div>
                 {rev.verifiedPurchase && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-medium text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
                     <CheckCircle className="w-3 h-3" />
                     Verified
                   </span>
@@ -117,6 +117,12 @@ export function ReviewsSection() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Mobile Swipe Cue */}
+        <div className="flex sm:hidden items-center justify-center gap-1.5 pt-2 text-[10px] text-[#6E6459]">
+          <span>Swipe to explore verified reviews</span>
+          <span>&rarr;</span>
         </div>
 
       </div>

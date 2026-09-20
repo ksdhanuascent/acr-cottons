@@ -50,7 +50,8 @@ export default function HomePage() {
           href="/shop"
           className="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-semibold text-[#332C26] hover:text-[#B89A52] transition underline underline-offset-8"
         >
-          <span>View All 10 Bedspread & Pillow Masterworks in Catalog</span>
+          <span className="sm:hidden">View All 10 Bedspread etc.</span>
+          <span className="hidden sm:inline">View All 10 Bedspread & Pillow Masterworks in Catalog</span>
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>

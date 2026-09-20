@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { X, Star, Check, Truck, ShieldCheck, RefreshCw, ZoomIn, ShoppingBag, ArrowRight } from 'lucide-react';
+import { X, Star, Check, Truck, ShieldCheck, RefreshCw, ZoomIn, ShoppingBag, ArrowRight, AlertCircle } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { PRODUCTS } from '@/lib/catalog';
 import { Product } from '@/lib/types';
+import { validateReview, checkRateLimit } from '@/lib/moderation';
 
 export function QuickViewModal() {
-  const { quickViewProduct, setQuickViewProduct, addToCart, user, setAuthModalOpen, setCheckoutModalOpen, getProductReviews } = useStore();
+  const { quickViewProduct, setQuickViewProduct, addToCart, user, setAuthModalOpen, setCheckoutModalOpen, getProductReviews, addReview } = useStore();
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [pincode, setPincode] = useState('');
@@ -16,6 +17,16 @@ export function QuickViewModal() {
   const [isHovering, setIsHovering] = useState(false);
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 });
   const [activeTab, setActiveTab] = useState<'details' | 'reviews'>('details');
+
+  // Review Form States
+  const [isWritingReview, setIsWritingReview] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewTitle, setReviewTitle] = useState('');
+  const [reviewComment, setReviewComment] = useState('');
+  const [guestName, setGuestName] = useState('');
+  const [guestCity, setGuestCity] = useState('');
+  const [moderationError, setModerationError] = useState<string | null>(null);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   if (!quickViewProduct) return null;
 
@@ -51,6 +62,53 @@ export function QuickViewModal() {
   const handleSwitchDesign = (p: Product) => {
     setQuickViewProduct(p);
     setSelectedSize(p.sizes[0]?.name || '');
+    setIsWritingReview(false);
+  };
+
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setModerationError(null);
+
+    // Rate limit check (cooldown 10s)
+    if (!checkRateLimit('review', 10)) {
+      setModerationError('Please wait 10 seconds before posting another review.');
+      return;
+    }
+
+    const reviewerName = user ? user.name : (guestName.trim() || 'Verified Patron');
+    const reviewerCity = user
+      ? (user.addresses?.[0]?.city ? `${user.addresses[0].city}, ${user.addresses[0].state}` : 'Erode, TN')
+      : (guestCity.trim() || 'Tamil Nadu');
+
+    const validation = validateReview({
+      name: reviewerName,
+      city: reviewerCity,
+      title: reviewTitle.trim(),
+      comment: reviewComment.trim(),
+      rating: reviewRating,
+    });
+
+    if (!validation.allowed) {
+      setModerationError(validation.reason || 'Review validation failed.');
+      return;
+    }
+
+    addReview({
+      productId: quickViewProduct.id,
+      userName: reviewerName,
+      userCity: reviewerCity,
+      rating: reviewRating,
+      title: reviewTitle.trim(),
+      comment: reviewComment.trim(),
+      verifiedPurchase: true,
+    });
+    setReviewTitle('');
+    setReviewComment('');
+    setGuestName('');
+    setGuestCity('');
+    setIsWritingReview(false);
+    setReviewSubmitted(true);
+    setTimeout(() => setReviewSubmitted(false), 4000);
   };
 
   // Sister bedspread designs (if current is bedspread set)
@@ -65,19 +123,19 @@ export function QuickViewModal() {
         {/* Close Button */}
         <button
           onClick={() => setQuickViewProduct(null)}
-          className="absolute top-5 right-5 z-20 p-2.5 rounded-full bg-[#E9E1D3] text-[#332C26] hover:bg-[#B89A52] hover:text-[#F8F5EE] transition shadow-md cursor-pointer"
+          className="absolute top-3 right-3 sm:top-5 sm:right-5 z-20 p-2 sm:p-2.5 rounded-full bg-[#E9E1D3] text-[#332C26] hover:bg-[#B89A52] hover:text-[#F8F5EE] transition shadow-md cursor-pointer"
           aria-label="Close modal"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 max-h-[85vh] overflow-y-auto">
           
           {/* Left Column: High-Res Weave Inspection View */}
-          <div className="lg:col-span-6 bg-[#E9E1D3]/50 p-6 sm:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#DFD7C7]">
+          <div className="lg:col-span-6 bg-[#E9E1D3]/50 p-4 sm:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#DFD7C7]">
             <div>
               <div
-                className="relative w-full h-[380px] sm:h-[480px] rounded-2xl overflow-hidden bg-[#E9E1D3] border border-[#DFD7C7] group cursor-crosshair select-none"
+                className="relative w-full h-[280px] sm:h-[480px] rounded-2xl overflow-hidden bg-[#E9E1D3] border border-[#DFD7C7] group cursor-crosshair select-none"
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
                 onMouseMove={handleMouseMove}
@@ -185,7 +243,7 @@ export function QuickViewModal() {
                     ))}
                   </div>
                   <span className="text-xs font-semibold text-[#332C26]">{quickViewProduct.rating}</span>
-                  <span className="text-xs text-[#6E6459]">({quickViewProduct.reviewCount} verified reviews)</span>
+                  <span className="text-xs text-[#6E6459]">({reviews.length} verified reviews)</span>
                 </div>
               </div>
 
@@ -291,9 +349,127 @@ export function QuickViewModal() {
                 </div>
               ) : (
                 /* Tab Content: Reviews */
-                <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                <div className="space-y-3.5 max-h-64 overflow-y-auto pr-1">
+                  <div className="flex items-center justify-between pb-2 border-b border-[#DFD7C7]/60">
+                    <span className="text-xs font-semibold text-[#332C26]">
+                      {reviews.length} Verified Patron Review{reviews.length === 1 ? '' : 's'}
+                    </span>
+                    <button
+                      onClick={() => setIsWritingReview(!isWritingReview)}
+                      className="text-[11px] uppercase tracking-wider font-semibold text-[#B89A52] hover:text-[#332C26] transition underline cursor-pointer"
+                    >
+                      {isWritingReview ? 'Cancel' : '+ Write a Review'}
+                    </button>
+                  </div>
+
+                  {/* Non-authenticated Prompt */}
+                  {!user && !isWritingReview && (
+                    <div className="p-2.5 bg-[#E9E1D3]/50 rounded-xl border border-[#DFD7C7] flex items-center justify-between text-xs">
+                      <span className="text-[11px] text-[#6E6459]">Have you experienced this suite?</span>
+                      <button
+                        onClick={() => setIsWritingReview(true)}
+                        className="text-[10px] uppercase tracking-wider font-bold text-[#332C26] underline hover:text-[#B89A52] cursor-pointer"
+                      >
+                        Write a Review
+                      </button>
+                    </div>
+                  )}
+
+                  {/* In-place Review Submission Form */}
+                  {isWritingReview && (
+                    <form onSubmit={handleReviewSubmit} className="p-3 bg-[#E9E1D3]/70 rounded-xl border border-[#B89A52]/40 space-y-2.5 animate-in fade-in duration-200">
+                      {user ? (
+                        <div className="text-[11px] text-[#6E6459] flex items-center justify-between">
+                          <span>Reviewing as: <strong className="text-[#332C26]">{user.name}</strong></span>
+                          <span className="text-[#B89A52] text-[10px] font-semibold">✓ Verified Patron</span>
+                        </div>
+                      ) : (
+                        <div className="space-y-1.5">
+                          <div className="grid grid-cols-2 gap-2">
+                            <input
+                              type="text"
+                              placeholder="Your Name (e.g. Rajesh K.)"
+                              value={guestName}
+                              onChange={(e) => setGuestName(e.target.value)}
+                              required
+                              className="w-full bg-[#F8F5EE] border border-[#DFD7C7] rounded-lg px-2.5 py-1.5 text-xs text-[#332C26] outline-none font-sans"
+                            />
+                            <input
+                              type="text"
+                              placeholder="City / Town (e.g. Erode, TN)"
+                              value={guestCity}
+                              onChange={(e) => setGuestCity(e.target.value)}
+                              required
+                              className="w-full bg-[#F8F5EE] border border-[#DFD7C7] rounded-lg px-2.5 py-1.5 text-xs text-[#332C26] outline-none font-sans"
+                            />
+                          </div>
+                          <div className="flex items-center justify-between text-[10px] text-[#6E6459]">
+                            <span>Writing as Patron Guest</span>
+                            <button
+                              type="button"
+                              onClick={() => setAuthModalOpen(true)}
+                              className="text-[#B89A52] underline hover:text-[#332C26] cursor-pointer"
+                            >
+                              Sign In for profile auto-fill
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-[#332C26]">Your Rating:</span>
+                        <div className="flex gap-1 text-[#B89A52]">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setReviewRating(star)}
+                              className="cursor-pointer hover:scale-110 transition p-0.5"
+                            >
+                              <Star className={`w-4 h-4 ${star <= reviewRating ? 'fill-current' : 'stroke-current fill-none'}`} />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Review Headline (e.g. Pure five-star hotel luxury)"
+                        value={reviewTitle}
+                        onChange={(e) => setReviewTitle(e.target.value)}
+                        required
+                        className="w-full bg-[#F8F5EE] border border-[#DFD7C7] rounded-lg px-3 py-1.5 text-xs text-[#332C26] outline-none font-sans"
+                      />
+                      <textarea
+                        rows={2}
+                        placeholder="Describe the weave texture, cooling comfort, and hand feel..."
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        required
+                        className="w-full bg-[#F8F5EE] border border-[#DFD7C7] rounded-lg p-2 text-xs text-[#332C26] outline-none font-sans resize-none"
+                      />
+                      {moderationError && (
+                        <div className="p-2 bg-red-100 border border-red-200 text-red-800 text-[11px] rounded-lg flex items-center gap-1.5">
+                          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                          <span>{moderationError}</span>
+                        </div>
+                      )}
+                      <button
+                        type="submit"
+                        className="w-full py-2 bg-[#332C26] text-[#F8F5EE] hover:bg-[#B89A52] rounded-lg text-xs uppercase tracking-wider font-semibold transition cursor-pointer"
+                      >
+                        Publish Atelier Review
+                      </button>
+                    </form>
+                  )}
+
+                  {reviewSubmitted && (
+                    <div className="p-2 bg-emerald-100 text-emerald-800 text-xs rounded-lg font-medium text-center">
+                      ✓ Thank you! Your verified review has been published.
+                    </div>
+                  )}
+
                   {reviews.length === 0 ? (
-                    <p className="text-xs text-[#6E6459]">Be the first to review this atelier masterwork.</p>
+                    <p className="text-xs text-[#6E6459] py-3 text-center">Be the first to review this atelier masterwork.</p>
                   ) : (
                     reviews.map((rev) => (
                       <div key={rev.id} className="p-3 bg-[#E9E1D3]/40 rounded-xl border border-[#DFD7C7]">
@@ -306,7 +482,7 @@ export function QuickViewModal() {
                           <span className="text-[10px] text-[#6E6459]">{rev.createdAt}</span>
                         </div>
                         <h4 className="text-xs font-semibold text-[#332C26]">{rev.title}</h4>
-                        <p className="text-xs text-[#6E6459] mt-1 font-light">{rev.comment}</p>
+                        <p className="text-xs text-[#6E6459] mt-1 font-light leading-relaxed">{rev.comment}</p>
                         <span className="block text-[10px] text-[#B89A52] mt-1.5">
                           ✓ Verified Connoisseur: {rev.userName} ({rev.userCity})
                         </span>
@@ -316,47 +492,54 @@ export function QuickViewModal() {
                 </div>
               )}
 
-              {/* Quantity Selector & Action Buttons */}
-              <div className="pt-4 border-t border-[#DFD7C7] space-y-3">
-                <div className="flex items-center gap-4">
-                  <span className="text-xs uppercase tracking-wider font-semibold text-[#332C26]">
-                    Quantity:
-                  </span>
-                  <div className="flex items-center border border-[#DFD7C7] bg-[#E9E1D3] rounded-full overflow-hidden">
-                    <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="px-3 py-1 text-sm text-[#332C26] hover:bg-[#B89A52] hover:text-white transition cursor-pointer"
-                    >
-                      -
-                    </button>
-                    <span className="px-3 text-xs font-semibold text-[#332C26]">{quantity}</span>
-                    <button
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="px-3 py-1 text-sm text-[#332C26] hover:bg-[#B89A52] hover:text-white transition cursor-pointer"
-                    >
-                      +
-                    </button>
+              {/* Quantity Selector & Action Buttons (Mobile Sticky Bar) */}
+              <div className="pt-3 sm:pt-4 border-t border-[#DFD7C7] space-y-3 sticky bottom-0 bg-[#F8F5EE]/95 backdrop-blur-md -mx-6 px-6 pb-3 sm:pb-0 sm:static sm:mx-0 sm:px-0 sm:bg-transparent sm:backdrop-blur-none z-10 shadow-[0_-4px_16px_rgba(51,44,38,0.08)] sm:shadow-none">
+                <div className="flex items-center justify-between sm:justify-start gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs uppercase tracking-wider font-semibold text-[#332C26]">
+                      Qty:
+                    </span>
+                    <div className="flex items-center border border-[#DFD7C7] bg-[#E9E1D3] rounded-full overflow-hidden">
+                      <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="px-2.5 py-0.5 sm:px-3 sm:py-1 text-sm text-[#332C26] hover:bg-[#B89A52] hover:text-white transition cursor-pointer"
+                        aria-label="Decrease quantity"
+                      >
+                        -
+                      </button>
+                      <span className="px-2.5 sm:px-3 text-xs font-semibold text-[#332C26]">{quantity}</span>
+                      <button
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="px-2.5 py-0.5 sm:px-3 sm:py-1 text-sm text-[#332C26] hover:bg-[#B89A52] hover:text-white transition cursor-pointer"
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
+                  <span className="text-xs font-semibold text-[#332C26] sm:hidden">
+                    ₹{(quickViewProduct.price * quantity).toLocaleString('en-IN')}
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                   <button
                     onClick={() => {
                       addToCart(quickViewProduct, currentSize, quantity);
                       setQuickViewProduct(null);
                     }}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-full border border-[#332C26] text-[#332C26] hover:bg-[#332C26] hover:text-[#F8F5EE] text-xs uppercase tracking-widest font-semibold transition shadow-xs cursor-pointer"
+                    className="w-full flex items-center justify-center gap-1.5 sm:gap-2 py-3 sm:py-3.5 px-3 sm:px-4 rounded-full border border-[#332C26] text-[#332C26] hover:bg-[#332C26] hover:text-[#F8F5EE] text-[11px] sm:text-xs uppercase tracking-widest font-semibold transition shadow-xs cursor-pointer"
                   >
-                    <ShoppingBag className="w-4 h-4" />
+                    <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span>Add to Bag</span>
                   </button>
 
                   <button
                     onClick={handleBuyNow}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-full bg-[#332C26] text-[#F8F5EE] hover:bg-[#B89A52] text-xs uppercase tracking-widest font-semibold transition shadow-md cursor-pointer"
+                    className="w-full flex items-center justify-center gap-1.5 sm:gap-2 py-3 sm:py-3.5 px-3 sm:px-4 rounded-full bg-[#332C26] text-[#F8F5EE] hover:bg-[#B89A52] text-[11px] sm:text-xs uppercase tracking-widest font-semibold transition shadow-md cursor-pointer"
                   >
                     <span>Buy Now</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
                 </div>
               </div>

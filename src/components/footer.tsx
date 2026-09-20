@@ -11,20 +11,20 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-[#2B2520] text-[#E9E1D3] pt-16 pb-12 border-t border-[#B89A52]/20">
+    <footer className="bg-[#2B2520] text-[#E9E1D3] pt-10 sm:pt-16 pb-8 sm:pb-12 border-t border-[#B89A52]/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         
         {/* Main Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-14 border-b border-[#E9E1D3]/10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-12 pb-10 sm:pb-14 border-b border-[#E9E1D3]/10">
           
           {/* Brand Col */}
-          <div className="md:col-span-5 space-y-5">
-            <div className="relative h-12 w-48">
+          <div className="md:col-span-5 space-y-4 sm:space-y-5">
+            <div className="relative h-10 w-40 sm:h-12 sm:w-48">
               <Image
                 src="/assets/brand/logo_gold_transparent.png"
                 alt="ACR Cottons"
                 fill
-                sizes="192px"
+                sizes="(max-width: 640px) 160px, 192px"
                 className="object-contain object-left"
               />
             </div>

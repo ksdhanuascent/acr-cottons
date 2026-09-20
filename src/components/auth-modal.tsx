@@ -70,12 +70,13 @@ export function AuthModal() {
 
         {/* Brand Stamp */}
         <div className="text-center mb-6">
-          <div className="relative w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden shadow-md border-2 border-[#B89A52]/40 bg-[#332C26]">
+          <div className="relative w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden shadow-lg border-2 border-[#B89A52]/50 bg-[#332C26]">
             <Image
               src="/assets/brand/shoplogo_circular.png"
               alt="ACR Cottons Logo"
               fill
-              sizes="64px"
+              unoptimized
+              sizes="80px"
               className="object-contain"
             />
           </div>

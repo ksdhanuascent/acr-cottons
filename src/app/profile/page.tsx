@@ -10,6 +10,7 @@ function ProfileContent() {
     user,
     orders,
     customOrders,
+    deleteCustomOrder,
     updateProfile,
     addAddress,
     removeAddress,
@@ -443,9 +444,25 @@ function ProfileContent() {
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-semibold text-[#332C26]">{co.fabric}</span>
-                        <span className="text-[9px] uppercase font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full">
-                          {co.status.replace('_', ' ')}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[9px] uppercase font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full">
+                            {co.status.replace('_', ' ')}
+                          </span>
+                          {co.status === 'UNDER_REVIEW' && (
+                            <button
+                              onClick={() => {
+                                if (confirm('Withdraw this unreviewed bespoke commission request?')) {
+                                  deleteCustomOrder(co.id);
+                                }
+                              }}
+                              className="text-[#6E6459] hover:text-red-700 p-1 transition cursor-pointer"
+                              title="Withdraw unreviewed request"
+                              aria-label="Withdraw unreviewed request"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                       <p className="text-[11px] text-[#6E6459]">
                         Dimensions: {co.dimensions} • Quantity: {co.quantity} suite(s)

@@ -2,11 +2,12 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Upload, CheckCircle2, Sparkles, MessageCircle, Clock } from 'lucide-react';
+import { Upload, CheckCircle2, Sparkles, MessageCircle, Clock, Trash2, AlertCircle } from 'lucide-react';
 import { useStore } from '@/lib/store';
+import { validateBespokeRequest, checkRateLimit } from '@/lib/moderation';
 
 export function BespokeSection() {
-  const { user, setAuthModalOpen, submitCustomOrder, customOrders } = useStore();
+  const { user, setAuthModalOpen, submitCustomOrder, deleteCustomOrder, customOrders } = useStore();
   const [fabric, setFabric] = useState('Combed Erode Cotton (400 TC)');
   const [dimensions, setDimensions] = useState('King Suite (108″ × 108″ + 2 Shams)');
   const [quantity, setQuantity] = useState(1);
@@ -14,6 +15,8 @@ export function BespokeSection() {
   const [designFile, setDesignFile] = useState<File | null>(null);
   const [designPreview, setDesignPreview] = useState<string | null>(null);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
+  const [moderationError, setModerationError] = useState<string | null>(null);
+  const [deletionNotice, setDeletionNotice] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -62,6 +65,27 @@ export function BespokeSection() {
       return;
     }
 
+    setModerationError(null);
+
+    // Rate limiting check (cooldown 15s)
+    if (!checkRateLimit('bespoke', 15)) {
+      setModerationError('Please allow 15 seconds before submitting another bespoke inquiry.');
+      return;
+    }
+
+    // Input moderation & anti-abuse validation
+    const check = validateBespokeRequest({
+      fabric,
+      dimensions,
+      notes,
+      quantity,
+    });
+
+    if (!check.allowed) {
+      setModerationError(check.reason || 'Input validation failed.');
+      return;
+    }
+
     const order = submitCustomOrder({
       fabric,
       dimensions,
@@ -86,27 +110,27 @@ export function BespokeSection() {
   };
 
   return (
-    <section id="bespoke" className="py-16 sm:py-24 bg-[#E9E1D3]/50 border-b border-[#DFD7C7]">
+    <section id="bespoke" className="py-10 sm:py-24 bg-[#E9E1D3]/50 border-b border-[#DFD7C7]">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         
         {/* Section Heading */}
-        <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-[#B89A52] font-semibold mb-2">
+        <div className="max-w-3xl mb-6 sm:mb-12">
+          <div className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#B89A52] font-semibold mb-1.5 sm:mb-2">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Customized Weaving Atelier</span>
           </div>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#332C26] font-normal">
+          <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl text-[#332C26] font-normal">
             Bespoke Bedding Commissions
           </h2>
-          <p className="text-xs sm:text-sm text-[#6E6459] max-w-xl mt-2 font-light leading-relaxed">
+          <p className="text-[11px] sm:text-sm text-[#6E6459] max-w-xl mt-1.5 sm:mt-2 font-light leading-relaxed">
             Have a distinct bedroom palette, vintage motif, or architectural suite dimension? Upload your reference sketch or pattern plate. Our Erode master weavers will review loom feasibility and consult with you directly.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 items-start">
           
           {/* Left Form */}
-          <div className="lg:col-span-7 bg-[#F8F5EE] rounded-[2rem] p-6 sm:p-8 border border-[#DFD7C7] shadow-xl">
+          <div className="lg:col-span-7 bg-[#F8F5EE] rounded-[2rem] p-5 sm:p-8 border border-[#DFD7C7] shadow-xl">
             {submittedId ? (
               <div className="py-8 text-center space-y-4">
                 <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto">
@@ -250,10 +274,17 @@ export function BespokeSection() {
                   />
                 </div>
 
+                {moderationError && (
+                  <div className="p-3 bg-red-100 border border-red-200 text-red-800 text-xs rounded-xl flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{moderationError}</span>
+                  </div>
+                )}
+
                 {/* Submit Action */}
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-full bg-[#332C26] text-[#F8F5EE] hover:bg-[#B89A52] text-xs uppercase tracking-widest font-semibold transition-all shadow-md cursor-pointer"
+                  className="w-full py-3.5 sm:py-4 rounded-full bg-[#332C26] text-[#F8F5EE] hover:bg-[#B89A52] text-xs uppercase tracking-widest font-semibold transition-all shadow-md cursor-pointer"
                 >
                   {user ? 'Submit Bespoke Inquiry' : 'Sign In & Submit Commission'}
                 </button>
@@ -266,14 +297,35 @@ export function BespokeSection() {
 
           {/* Right Explanatory & Patron Past Requests */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-[#F8F5EE] rounded-[2rem] p-6 sm:p-8 border border-[#DFD7C7] shadow-sm space-y-4">
+            <div className="bg-[#F8F5EE] rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 border border-[#DFD7C7] shadow-sm space-y-3 sm:space-y-4">
               <span className="text-[10px] uppercase tracking-[0.25em] font-semibold text-[#B89A52]">
                 The Atelier Process
               </span>
-              <h3 className="font-serif text-xl text-[#332C26]">
+              <h3 className="font-serif text-lg sm:text-xl text-[#332C26]">
                 From Thread to Commission
               </h3>
-              <ul className="space-y-3.5 text-xs text-[#6E6459] font-light">
+
+              {/* Mobile 3-Step Horizontal Stepper Grid */}
+              <div className="grid grid-cols-3 gap-2 sm:hidden pt-1">
+                <div className="bg-[#E9E1D3]/60 rounded-xl p-2 text-center space-y-1">
+                  <span className="w-5 h-5 rounded-full bg-[#332C26] text-[#F8F5EE] font-semibold text-[9px] inline-flex items-center justify-center">1</span>
+                  <span className="text-[10px] font-semibold text-[#332C26] block">Design Review</span>
+                  <span className="text-[8.5px] text-[#6E6459] block leading-tight">Yarn count & motif inspection</span>
+                </div>
+                <div className="bg-[#E9E1D3]/60 rounded-xl p-2 text-center space-y-1">
+                  <span className="w-5 h-5 rounded-full bg-[#332C26] text-[#F8F5EE] font-semibold text-[9px] inline-flex items-center justify-center">2</span>
+                  <span className="text-[10px] font-semibold text-[#332C26] block">Consultation</span>
+                  <span className="text-[8.5px] text-[#6E6459] block leading-tight">Palette & quote finalization</span>
+                </div>
+                <div className="bg-[#E9E1D3]/60 rounded-xl p-2 text-center space-y-1">
+                  <span className="w-5 h-5 rounded-full bg-[#332C26] text-[#F8F5EE] font-semibold text-[9px] inline-flex items-center justify-center">3</span>
+                  <span className="text-[10px] font-semibold text-[#332C26] block">Loom Craft</span>
+                  <span className="text-[8.5px] text-[#6E6459] block leading-tight">Handcrafted in Erode</span>
+                </div>
+              </div>
+
+              {/* Desktop Stepper List */}
+              <ul className="hidden sm:block space-y-3.5 text-xs text-[#6E6459] font-light">
                 <li className="flex items-start gap-3">
                   <span className="w-5 h-5 rounded-full bg-[#E9E1D3] text-[#332C26] font-semibold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">
                     1
@@ -297,28 +349,54 @@ export function BespokeSection() {
 
             {/* Existing Inquiries (if logged in) */}
             {user && customOrders.length > 0 && (
-              <div className="bg-[#F8F5EE] rounded-[2rem] p-6 border border-[#DFD7C7] shadow-sm">
+              <div className="bg-[#F8F5EE] rounded-[2rem] p-5 sm:p-6 border border-[#DFD7C7] shadow-sm">
                 <h4 className="text-xs uppercase tracking-wider font-semibold text-[#332C26] mb-3 flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-[#B89A52]" />
                   Your Active Bespoke Requests ({customOrders.length})
                 </h4>
+
+                {deletionNotice && (
+                  <div className="mb-2.5 p-2 bg-emerald-100 text-emerald-800 text-[11px] rounded-lg">
+                    ✓ {deletionNotice}
+                  </div>
+                )}
+
                 <div className="space-y-2.5 max-h-48 overflow-y-auto">
                   {customOrders.map((co) => (
                     <div
                       key={co.id}
-                      className="p-3 bg-[#E9E1D3]/60 rounded-xl border border-[#DFD7C7] text-xs flex justify-between items-center"
+                      className="p-3 bg-[#E9E1D3]/60 rounded-xl border border-[#DFD7C7] text-xs flex justify-between items-center gap-2"
                     >
-                      <div>
-                        <span className="font-semibold text-[#332C26] block truncate max-w-[180px]">
+                      <div className="min-w-0 flex-1">
+                        <span className="font-semibold text-[#332C26] block truncate">
                           {co.fabric}
                         </span>
                         <span className="text-[10px] text-[#6E6459] block">
                           {co.dimensions} • Qty: {co.quantity}
                         </span>
                       </div>
-                      <span className="text-[10px] uppercase font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full">
-                        {co.status.replace('_', ' ')}
-                      </span>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-[9px] uppercase font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full">
+                          {co.status.replace('_', ' ')}
+                        </span>
+                        {co.status === 'UNDER_REVIEW' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (confirm('Withdraw this unreviewed bespoke commission request?')) {
+                                deleteCustomOrder(co.id);
+                                setDeletionNotice('Bespoke request withdrawn successfully.');
+                                setTimeout(() => setDeletionNotice(null), 3000);
+                              }
+                            }}
+                            className="p-1 rounded text-[#6E6459] hover:text-red-700 hover:bg-red-50 transition cursor-pointer"
+                            title="Withdraw unreviewed request"
+                            aria-label="Withdraw unreviewed request"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

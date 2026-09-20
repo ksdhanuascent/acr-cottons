@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Star, Eye, ShoppingBag, ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { Star, Eye, ShoppingBag, ChevronDown, Search, X } from 'lucide-react';
 import { Product, ProductCategory } from '@/lib/types';
 import { PRODUCTS } from '@/lib/catalog';
 import { useStore } from '@/lib/store';
@@ -64,35 +65,35 @@ export function CollectionGrid({
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row justify-between md:items-end gap-6 mb-12">
+        <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 sm:gap-6 mb-6 sm:mb-12">
           <div>
-            <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-[#B89A52] font-semibold mb-2">
+            <div className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#B89A52] font-semibold mb-1.5 sm:mb-2">
               <span>Textile Masterworks</span>
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#332C26] font-normal">
+            <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl text-[#332C26] font-normal">
               The Bedding Collection
             </h2>
-            <p className="text-xs sm:text-sm text-[#6E6459] max-w-lg mt-2 font-light">
+            <p className="text-[11px] sm:text-sm text-[#6E6459] max-w-lg mt-1 sm:mt-2 font-light">
               Every set contains an authentic combed cotton bedspread alongside matching tailored pillow covers, woven with meticulous precision in Erode.
             </p>
           </div>
 
           {/* Sort Controller */}
           {showFilters && (
-            <div className="flex items-center space-x-3 text-xs text-[#6E6459]">
-              <span className="uppercase tracking-widest text-[10px]">Sort by:</span>
+            <div className="flex items-center space-x-2 sm:space-x-3 text-xs text-[#6E6459]">
+              <span className="uppercase tracking-widest text-[9px] sm:text-[10px]">Sort by:</span>
               <div className="relative inline-flex items-center">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                  className="appearance-none bg-[#E9E1D3] border border-[#DFD7C7] text-[#332C26] text-xs rounded-full pl-4 pr-9 py-2 outline-none cursor-pointer hover:border-[#B89A52] focus:border-[#B89A52] transition shadow-xs font-medium"
+                  className="appearance-none bg-[#E9E1D3] border border-[#DFD7C7] text-[#332C26] text-[11px] sm:text-xs rounded-full pl-3 pr-8 sm:pl-4 sm:pr-9 py-1.5 sm:py-2 outline-none cursor-pointer hover:border-[#B89A52] focus:border-[#B89A52] transition shadow-xs font-medium"
                 >
                   <option value="featured">Featured Editions</option>
                   <option value="price-asc">Price: Low to High</option>
                   <option value="price-desc">Price: High to Low</option>
                   <option value="rating">Top Rated</option>
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 text-[#6E6459] absolute right-3 pointer-events-none" />
+                <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#6E6459] absolute right-2.5 sm:right-3 pointer-events-none" />
               </div>
             </div>
           )}
@@ -100,12 +101,12 @@ export function CollectionGrid({
 
         {/* Category Pill Tabs */}
         {showFilters && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-10 scrollbar-none">
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 sm:pb-4 mb-6 sm:mb-10 scrollbar-none">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`text-xs uppercase tracking-widest px-5 py-2.5 rounded-full font-medium transition-all whitespace-nowrap cursor-pointer ${
+                className={`text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full font-medium transition-all whitespace-nowrap cursor-pointer ${
                   selectedCategory === cat.id
                     ? 'bg-[#332C26] text-[#F8F5EE] shadow-sm'
                     : 'bg-[#E9E1D3]/80 text-[#6E6459] hover:text-[#332C26] hover:bg-[#E9E1D3]'
@@ -117,17 +118,69 @@ export function CollectionGrid({
           </div>
         )}
 
-        {/* Product Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-          {displayedProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onQuickView={() => setQuickViewProduct(product)}
-              onAddToCart={() => addToCart(product, product.sizes[0]?.name || 'Standard', 1)}
-            />
-          ))}
-        </div>
+        {/* Active Search Query Pill */}
+        {searchQuery && (
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 bg-[#E9E1D3]/70 border border-[#DFD7C7] rounded-xl sm:rounded-2xl px-4 py-3 text-xs text-[#332C26]">
+            <div className="flex items-center gap-2">
+              <Search className="w-4 h-4 text-[#B89A52] flex-shrink-0" />
+              <span>
+                Showing {displayedProducts.length} {displayedProducts.length === 1 ? 'masterwork' : 'masterworks'} matching <strong className="text-[#332C26] font-semibold">&ldquo;{searchQuery}&rdquo;</strong>
+              </span>
+            </div>
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-semibold text-[#B89A52] hover:text-[#332C26] transition underline underline-offset-4 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>Clear Filter</span>
+            </Link>
+          </div>
+        )}
+
+        {/* Product Cards Grid or Empty State */}
+        {displayedProducts.length === 0 ? (
+          <div className="text-center py-16 sm:py-24 bg-[#E9E1D3]/30 rounded-3xl border border-dashed border-[#DFD7C7] p-8 max-w-xl mx-auto space-y-4">
+            <div className="w-14 h-14 rounded-full bg-[#E9E1D3] border border-[#B89A52]/40 text-[#B89A52] flex items-center justify-center mx-auto shadow-xs">
+              <Search className="w-6 h-6" />
+            </div>
+            <h3 className="font-serif text-xl sm:text-2xl text-[#332C26]">
+              No Masterworks Found
+            </h3>
+            <p className="text-xs sm:text-sm text-[#6E6459] max-w-md mx-auto leading-relaxed">
+              {searchQuery
+                ? `We couldn't find any products matching "${searchQuery}". Try exploring our pure combed cotton jacquards or reset your search.`
+                : 'There are currently no items matching your criteria in this collection.'}
+            </p>
+            <div className="pt-2">
+              {searchQuery ? (
+                <Link
+                  href="/shop"
+                  className="inline-flex items-center gap-2 py-2.5 px-6 rounded-full bg-[#332C26] text-[#F8F5EE] text-xs uppercase tracking-widest font-semibold hover:bg-[#B89A52] transition cursor-pointer shadow-sm"
+                >
+                  <span>Reset Search & View All</span>
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className="inline-flex items-center gap-2 py-2.5 px-6 rounded-full bg-[#332C26] text-[#F8F5EE] text-xs uppercase tracking-widest font-semibold hover:bg-[#B89A52] transition cursor-pointer shadow-sm"
+                >
+                  <span>View All Collections</span>
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-8 lg:gap-10">
+            {displayedProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onQuickView={() => setQuickViewProduct(product)}
+                onAddToCart={() => addToCart(product, product.sizes[0]?.name || 'Standard', 1)}
+              />
+            ))}
+          </div>
+        )}
 
       </div>
     </section>
@@ -142,40 +195,44 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onQuickView, onAddToCart }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const { getProductReviews } = useStore();
+  const reviews = getProductReviews(product.id);
+  const reviewCount = reviews.length > 0 ? reviews.length : product.reviewCount;
 
   return (
     <article
-      className="group flex flex-col bg-[#E9E1D3]/40 rounded-3xl p-3.5 sm:p-4 border border-[#DFD7C7] hover:border-[#B89A52]/60 hover:shadow-xl transition-all duration-300 relative"
+      className="group flex flex-col bg-[#E9E1D3]/40 rounded-2xl sm:rounded-3xl p-2.5 sm:p-4 border border-[#DFD7C7] hover:border-[#B89A52]/60 hover:shadow-xl transition-all duration-300 relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image Plate Frame */}
-      <div className="relative w-full h-[380px] sm:h-[420px] rounded-2xl overflow-hidden bg-[#E9E1D3] mb-4 select-none cursor-pointer"
+      <div
+        className="relative w-full h-[180px] sm:h-[420px] rounded-xl sm:rounded-2xl overflow-hidden bg-[#E9E1D3] mb-2.5 sm:mb-4 select-none cursor-pointer"
         onClick={onQuickView}
       >
         <Image
-          src={product.thumbnail || product.image}
+          src={product.image}
           alt={product.name}
           fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
         />
 
         {/* Badge */}
         {product.badge && (
-          <span className="absolute top-3.5 left-3.5 bg-[#F8F5EE]/90 backdrop-blur-sm text-[#332C26] text-[10px] font-semibold tracking-widest uppercase px-3 py-1 rounded-full border border-[#DFD7C7] shadow-xs">
+          <span className="absolute top-2 left-2 sm:top-3.5 sm:left-3.5 bg-[#F8F5EE]/95 backdrop-blur-sm text-[#332C26] text-[8px] sm:text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#DFD7C7] shadow-xs">
             {product.badge}
           </span>
         )}
 
         {/* Set Contents Pill */}
-        <span className="absolute bottom-3.5 left-3.5 right-3.5 bg-[#332C26]/85 backdrop-blur-md text-[#E9E1D3] text-[10px] text-center font-medium tracking-wider uppercase py-1 px-2 rounded-lg truncate">
+        <span className="absolute bottom-2 left-1.5 right-1.5 sm:bottom-3.5 sm:left-3.5 sm:right-3.5 bg-[#332C26]/85 backdrop-blur-md text-[#E9E1D3] text-[8px] sm:text-[10px] text-center font-medium tracking-wider uppercase py-0.5 px-1 sm:py-1 sm:px-2 rounded-md sm:rounded-lg truncate">
           {product.setContents}
         </span>
 
-        {/* Quick View Hover Button */}
+        {/* Quick View Hover Button (Desktop) */}
         <div
-          className={`absolute inset-0 bg-[#332C26]/20 backdrop-blur-[2px] flex items-center justify-center gap-3 transition-opacity duration-300 ${
+          className={`hidden sm:flex absolute inset-0 bg-[#332C26]/20 backdrop-blur-[2px] items-center justify-center gap-3 transition-opacity duration-300 ${
             isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
         >
@@ -193,50 +250,51 @@ export function ProductCard({ product, onQuickView, onAddToCart }: ProductCardPr
       </div>
 
       {/* Information Container */}
-      <div className="flex flex-col flex-grow justify-between px-1">
+      <div className="flex flex-col flex-grow justify-between px-0.5 sm:px-1">
         <div>
           {/* Rating */}
-          <div className="flex items-center gap-1.5 mb-1.5">
+          <div className="flex items-center gap-1 sm:gap-1.5 mb-1">
             <div className="flex text-[#B89A52]">
-              <Star className="w-3.5 h-3.5 fill-current" />
+              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current" />
             </div>
-            <span className="text-xs font-semibold text-[#332C26]">{product.rating}</span>
-            <span className="text-[11px] text-[#6E6459]">({product.reviewCount} reviews)</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-[#332C26]">{product.rating}</span>
+            <span className="text-[9px] sm:text-[11px] text-[#6E6459]">({reviewCount})</span>
           </div>
 
           {/* Product Title */}
           <h3
             onClick={onQuickView}
-            className="font-serif text-lg font-medium text-[#332C26] group-hover:text-[#B89A52] transition-colors cursor-pointer line-clamp-1"
+            className="font-serif text-xs sm:text-lg font-medium text-[#332C26] group-hover:text-[#B89A52] transition-colors cursor-pointer line-clamp-1"
           >
             {product.name}
           </h3>
 
           {/* Material Specs */}
-          <p className="text-xs text-[#6E6459] mt-1 font-light line-clamp-1">
+          <p className="text-[9.5px] sm:text-xs text-[#6E6459] mt-0.5 sm:mt-1 font-light line-clamp-1">
             {product.highlightedMaterial}
           </p>
         </div>
 
         {/* Price & Action Row */}
-        <div className="flex items-center justify-between pt-4 mt-3 border-t border-[#DFD7C7]/70">
-          <div className="flex items-baseline gap-2">
-            <span className="font-serif text-xl font-medium text-[#332C26]">
-              ₹{product.price}.00
+        <div className="flex items-center justify-between pt-2 sm:pt-4 mt-2 sm:mt-3 border-t border-[#DFD7C7]/70">
+          <div className="flex items-baseline gap-1 sm:gap-2">
+            <span className="font-serif text-sm sm:text-xl font-medium text-[#332C26]">
+              ₹{product.price}
             </span>
             {product.compareAtPrice && (
-              <span className="text-xs text-[#6E6459] line-through">
-                ₹{product.compareAtPrice}.00
+              <span className="text-[10px] sm:text-xs text-[#6E6459] line-through">
+                ₹{product.compareAtPrice}
               </span>
             )}
           </div>
 
           <button
             onClick={onAddToCart}
-            className="inline-flex items-center gap-1.5 bg-[#332C26] text-[#F8F5EE] hover:bg-[#B89A52] text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full transition-all duration-200 shadow-sm cursor-pointer"
+            className="inline-flex items-center justify-center gap-1 bg-[#332C26] text-[#F8F5EE] hover:bg-[#B89A52] text-[10px] sm:text-xs font-semibold uppercase tracking-wider px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-full transition-all duration-200 shadow-xs cursor-pointer"
           >
-            <ShoppingBag className="w-3.5 h-3.5" />
-            <span>Add to Bag</span>
+            <ShoppingBag className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <span className="hidden sm:inline">Add to Bag</span>
+            <span className="sm:hidden text-[9.5px]">Add</span>
           </button>
         </div>
       </div>

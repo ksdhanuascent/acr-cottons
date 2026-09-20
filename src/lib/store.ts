@@ -10,7 +10,7 @@ const STORAGE_KEYS = {
   USER: 'acr_user_v1',
   ORDERS: 'acr_orders_v1',
   CUSTOM_ORDERS: 'acr_custom_orders_v1',
-  REVIEWS: 'acr_reviews_v1',
+  REVIEWS: 'acr_reviews_v2',
 };
 
 // Demo user seed
@@ -83,10 +83,20 @@ function hydrate() {
     const savedCustom = localStorage.getItem(STORAGE_KEYS.CUSTOM_ORDERS);
     if (savedCustom) stateCache.customOrders = JSON.parse(savedCustom);
 
-    const savedReviews = localStorage.getItem(STORAGE_KEYS.REVIEWS);
+    const savedReviews = localStorage.getItem(STORAGE_KEYS.REVIEWS) || localStorage.getItem('acr_reviews_v1');
     if (savedReviews) {
-      stateCache.reviews = JSON.parse(savedReviews);
+      try {
+        const parsed = JSON.parse(savedReviews) as Review[];
+        const existingIds = new Set(parsed.map((r) => r.id));
+        const missingInitial = INITIAL_REVIEWS.filter((r) => !existingIds.has(r.id));
+        stateCache.reviews = [...parsed, ...missingInitial];
+        localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(stateCache.reviews));
+      } catch {
+        stateCache.reviews = INITIAL_REVIEWS;
+        localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(INITIAL_REVIEWS));
+      }
     } else {
+      stateCache.reviews = INITIAL_REVIEWS;
       localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(INITIAL_REVIEWS));
     }
   } catch (e) {
@@ -410,6 +420,15 @@ export const useStore = () => {
       stateCache.customOrders.unshift(newCustom);
       persistCustomOrders();
       return newCustom;
+    },
+    deleteCustomOrder: (customOrderId: string): boolean => {
+      const order = stateCache.customOrders.find((co) => co.id === customOrderId);
+      if (order && order.status === 'UNDER_REVIEW') {
+        stateCache.customOrders = stateCache.customOrders.filter((co) => co.id !== customOrderId);
+        persistCustomOrders();
+        return true;
+      }
+      return false;
     },
 
     // Quick View Modal
