@@ -78,7 +78,7 @@ export function Footer() {
                 </p>
                 <p className="flex items-center gap-2">
                   <Phone className="w-3.5 h-3.5 text-[#B89A52] flex-shrink-0" />
-                  <a href="tel:8778824123" className="hover:text-[#B89A52]">+91 87788 24123</a>
+                  <a href="tel:8778824123" className="font-sans font-medium tracking-wide hover:text-[#B89A52] transition">+91 87788 24123</a>
                 </p>
                 <p className="flex items-center gap-2">
                   <Clock className="w-3.5 h-3.5 text-[#B89A52] flex-shrink-0" />

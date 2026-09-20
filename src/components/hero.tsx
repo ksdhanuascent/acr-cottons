@@ -1,12 +1,48 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Sparkles, Award } from 'lucide-react';
+import { ArrowRight, Sparkles, Award, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PRODUCTS } from '@/lib/catalog';
 
 export function Hero() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const heroProducts = PRODUCTS.filter((p) => p.category === 'bedspread-sets').slice(0, 10);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % heroProducts.length);
+    }, 5500); // Serene 5.5s luxury cadence
+  }, [heroProducts.length]);
+
+  useEffect(() => {
+    resetTimer();
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [resetTimer]);
+
+  const handlePrev = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setActiveIndex((prev) => (prev - 1 + heroProducts.length) % heroProducts.length);
+    resetTimer();
+  }, [heroProducts.length, resetTimer]);
+
+  const handleNext = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setActiveIndex((prev) => (prev + 1) % heroProducts.length);
+    resetTimer();
+  }, [heroProducts.length, resetTimer]);
+
+  const handleSelect = useCallback((idx: number, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setActiveIndex(idx);
+    resetTimer();
+  }, [resetTimer]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { clientX, clientY, currentTarget } = e;
@@ -84,79 +120,141 @@ export function Hero() {
 
           </div>
 
-          {/* Right Composition Image Frame (design1.png in rounded card) */}
-          <div
-            className="lg:col-span-6 relative flex justify-center items-center py-6"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            style={{ perspective: '1000px' }}
-          >
-            {/* Main Rounded Bedspread Card */}
+          {/* Right Composition Image Frame with Synchronized Crossfade & Subtle Controls */}
+          <div className="lg:col-span-6 flex flex-col items-center py-6">
             <div
-              className="relative w-full max-w-md sm:max-w-lg h-[500px] sm:h-[580px] rounded-[2.5rem] overflow-hidden shadow-2xl bg-[#E9E1D3] border-4 border-[#F8F5EE] transition-transform duration-200 ease-out"
-              style={{
-                transform: `rotateY(${mousePos.x}deg) rotateX(${mousePos.y}deg)`,
-              }}
+              className="relative w-full flex justify-center items-center"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{ perspective: '1000px' }}
             >
-              <Image
-                src="/assets/designs/design1.webp"
-                alt="ACR Cottons Royal Damask Bedspread Design No. 1"
-                fill
-                priority
-                sizes="(max-width: 640px) 100vw, 500px"
-                className="object-cover object-center select-none hover:scale-105 transition-transform duration-700 ease-out"
-              />
+              {/* Main Tailored Bedspread Card with Subtle Architectural Inset Border */}
+              <div
+                className="relative w-full max-w-md sm:max-w-lg h-[500px] sm:h-[580px] rounded-tl-[3.5rem] rounded-br-[3.5rem] rounded-tr-2xl rounded-bl-2xl overflow-hidden shadow-2xl bg-[#E9E1D3] border border-[#B89A52]/40 ring-1 ring-[#DFD7C7] transition-transform duration-500 ease-out will-change-transform"
+                style={{
+                  transform: `rotateY(${mousePos.x}deg) rotateX(${mousePos.y}deg)`,
+                }}
+              >
+                {heroProducts.map((product, idx) => (
+                  <div
+                    key={product.id}
+                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                      idx === activeIndex ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                    }`}
+                  >
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      priority={idx < 2}
+                      sizes="(max-width: 640px) 100vw, 500px"
+                      className="object-cover object-center select-none"
+                    />
+                  </div>
+                ))}
 
-              {/* Floating Top-Left Badge */}
-              <div className="absolute top-5 left-5 bg-[#F8F5EE]/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-semibold text-[#332C26] shadow-sm border border-[#DFD7C7] flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
-                Atelier Signature • Edition 01
-              </div>
+                {/* Floating Set Breakdown Tag at bottom-right */}
+                <div className="absolute bottom-5 right-5 z-20 bg-[#332C26]/90 backdrop-blur-md text-[#E9E1D3] px-4 py-1.5 rounded-full text-[10px] tracking-wider uppercase font-medium border border-[#B89A52]/30 shadow-md">
+                  1 Bedspread + 2 Pillow Covers
+                </div>
 
-              {/* Floating Set Breakdown Tag at bottom-right */}
-              <div className="absolute bottom-5 right-5 bg-[#332C26]/85 backdrop-blur-md text-[#E9E1D3] px-3.5 py-1.5 rounded-full text-[10px] tracking-wider uppercase font-medium">
-                1 Bedspread + 2 Pillow Covers
-              </div>
-            </div>
-
-            {/* Circular Rotating Watermark Badge (Right Edge) */}
-            <div className="hidden sm:flex absolute -top-4 -right-4 w-32 h-32 rounded-full items-center justify-center pointer-events-none select-none">
-              <svg className="w-full h-full animate-spin-slow" viewBox="0 0 100 100">
-                <path
-                  id="circlePath"
-                  d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"
-                  fill="none"
-                />
-                <text className="text-[9.5px] uppercase tracking-[0.24em] fill-[#332C26] font-medium font-sans">
-                  <textPath href="#circlePath" startOffset="0%">
-                    ACR COTTONS • ERODE TEXTILE VALLEY • 100% COMBED COTTON •
-                  </textPath>
-                </text>
-              </svg>
-              <div className="absolute w-12 h-12 rounded-full bg-[#B89A52] flex items-center justify-center text-[#F8F5EE] font-serif text-xs font-bold shadow-md">
-                ACR
-              </div>
-            </div>
-
-            {/* Floating Macro Detail Inset Card (Bottom-Left) */}
-            <div className="absolute -bottom-4 -left-2 sm:left-2 w-52 sm:w-60 rounded-2xl overflow-hidden border-2 border-[#F8F5EE] shadow-2xl bg-[#E9E1D3] z-20">
-              <div className="relative h-28 sm:h-32">
-                <Image
-                  src="/assets/designs/design1_thumb.webp"
-                  alt="Fine jacquard relief weave macro"
-                  fill
-                  sizes="240px"
-                  className="object-cover object-bottom"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#332C26]/90 via-[#332C26]/30 to-transparent flex flex-col justify-end p-3 text-[#F8F5EE]">
-                  <span className="text-[9px] tracking-widest uppercase font-semibold text-[#B89A52]">
-                    Weave Architecture
-                  </span>
-                  <span className="text-xs font-serif font-medium text-[#F8F5EE]">
-                    Royal Jacquard Relief Weave
-                  </span>
+                {/* Active Design Identifier Tag at top-left */}
+                <div className="absolute top-5 left-5 z-20 bg-[#332C26]/90 backdrop-blur-md text-[#F8F5EE] px-3.5 py-1.5 rounded-full text-[10px] tracking-widest uppercase font-mono font-medium border border-[#B89A52]/30 shadow-sm transition-all">
+                  Edition {activeIndex + 1 < 10 ? `0${activeIndex + 1}` : activeIndex + 1}
                 </div>
               </div>
+
+              {/* Circular Rotating Watermark Badge with Exact Storefront Logo */}
+              <div className="hidden sm:flex absolute -top-4 -right-4 w-32 h-32 rounded-full items-center justify-center pointer-events-none select-none z-30">
+                <svg className="w-full h-full animate-spin-slow" viewBox="0 0 100 100">
+                  <path
+                    id="circlePath"
+                    d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"
+                    fill="none"
+                  />
+                  <text className="text-[9.5px] uppercase tracking-[0.24em] fill-[#332C26] font-medium font-sans">
+                    <textPath href="#circlePath" startOffset="0%">
+                      ACR COTTONS • ERODE TEXTILE VALLEY • 100% COMBED COTTON •
+                    </textPath>
+                  </text>
+                </svg>
+                <div className="absolute w-14 h-14 rounded-full overflow-hidden border-2 border-[#B89A52]/60 shadow-lg bg-[#332C26] p-1 flex items-center justify-center">
+                  <div className="relative w-full h-full">
+                    <Image
+                      src="/assets/brand/shoplogo_circular.png"
+                      alt="ACR Cottons Official Storefront Logo"
+                      fill
+                      sizes="56px"
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating Macro Detail Inset Card (Bottom-Left) - Synchronized with Active Design */}
+              <div className="absolute -bottom-4 -left-2 sm:left-2 w-52 sm:w-60 rounded-2xl overflow-hidden border border-[#B89A52]/40 shadow-2xl bg-[#E9E1D3] z-20">
+                <div className="relative h-28 sm:h-32">
+                  {heroProducts.map((product, idx) => (
+                    <div
+                      key={`macro-${product.id}`}
+                      className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                        idx === activeIndex ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                      }`}
+                    >
+                      <Image
+                        src={product.thumbnail}
+                        alt={`Fine jacquard relief weave macro for ${product.name}`}
+                        fill
+                        sizes="240px"
+                        className="object-cover object-bottom"
+                      />
+                    </div>
+                  ))}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#332C26]/95 via-[#332C26]/50 to-transparent flex flex-col justify-end p-3.5 text-[#F8F5EE] z-20 pointer-events-none">
+                    <span className="text-[10px] tracking-widest uppercase font-semibold text-[#F8F5EE]">
+                      Weave Architecture
+                    </span>
+                    <span className="text-xs font-serif font-medium text-[#F8F5EE] line-clamp-1 transition-all">
+                      {heroProducts[activeIndex]?.weave || 'Royal Jacquard Relief Weave'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Subtle Minimalist Low-Opacity Carousel Arrow Controls Under Hero Image */}
+            <div className="flex items-center justify-center gap-3 pt-7 z-10 select-none">
+              <button
+                onClick={handlePrev}
+                aria-label="Previous Design Edition"
+                className="p-1.5 rounded-full text-[#332C26] opacity-35 hover:opacity-100 hover:bg-[#E9E1D3] transition-all duration-200 cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <div className="flex items-center gap-1.5 px-2">
+                {heroProducts.map((_, i) => (
+                  <button
+                    key={`hero-dot-${i}`}
+                    onClick={(e) => handleSelect(i, e)}
+                    aria-label={`View design edition ${i + 1}`}
+                    className={`h-1 rounded-full transition-all duration-300 cursor-pointer ${
+                      i === activeIndex
+                        ? 'w-5 bg-[#B89A52] opacity-90'
+                        : 'w-1 bg-[#332C26] opacity-30 hover:opacity-75'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={handleNext}
+                aria-label="Next Design Edition"
+                className="p-1.5 rounded-full text-[#332C26] opacity-35 hover:opacity-100 hover:bg-[#E9E1D3] transition-all duration-200 cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
 
           </div>

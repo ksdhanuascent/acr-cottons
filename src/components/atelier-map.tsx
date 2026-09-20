@@ -92,7 +92,7 @@ export function AtelierMap() {
                     </span>
                     <a
                       href="tel:8778824123"
-                      className="font-serif text-lg text-[#332C26] hover:text-[#B89A52] transition block mt-0.5 font-medium"
+                      className="font-sans font-semibold tracking-wide text-lg text-[#332C26] hover:text-[#B89A52] transition block mt-0.5"
                     >
                       +91 87788 24123
                     </a>

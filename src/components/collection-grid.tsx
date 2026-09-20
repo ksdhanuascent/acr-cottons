@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Star, Eye, ShoppingBag } from 'lucide-react';
+import { Star, Eye, ShoppingBag, ChevronDown } from 'lucide-react';
 import { Product, ProductCategory } from '@/lib/types';
 import { PRODUCTS } from '@/lib/catalog';
 import { useStore } from '@/lib/store';
@@ -81,16 +81,19 @@ export function CollectionGrid({
           {showFilters && (
             <div className="flex items-center space-x-3 text-xs text-[#6E6459]">
               <span className="uppercase tracking-widest text-[10px]">Sort by:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                className="bg-[#E9E1D3] border border-[#DFD7C7] text-[#332C26] text-xs rounded-full px-3.5 py-1.5 outline-none cursor-pointer hover:border-[#B89A52] transition"
-              >
-                <option value="featured">Featured Editions</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="rating">Top Rated</option>
-              </select>
+              <div className="relative inline-flex items-center">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                  className="appearance-none bg-[#E9E1D3] border border-[#DFD7C7] text-[#332C26] text-xs rounded-full pl-4 pr-9 py-2 outline-none cursor-pointer hover:border-[#B89A52] focus:border-[#B89A52] transition shadow-xs font-medium"
+                >
+                  <option value="featured">Featured Editions</option>
+                  <option value="price-asc">Price: Low to High</option>
+                  <option value="price-desc">Price: High to Low</option>
+                  <option value="rating">Top Rated</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-[#6E6459] absolute right-3 pointer-events-none" />
+              </div>
             </div>
           )}
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { MessageCircle, X } from 'lucide-react';
 
 export function WhatsAppConcierge() {
@@ -16,20 +17,25 @@ export function WhatsAppConcierge() {
         <div className="mb-3 w-80 rounded-2xl bg-[#F8F5EE] border border-[#DFD7C7] p-5 shadow-2xl transition-all">
           <div className="flex items-start justify-between pb-3 border-b border-[#DFD7C7]">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-[#B89A52] flex items-center justify-center text-[#F8F5EE] font-serif font-bold text-sm shadow-sm">
-                ACR
+              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#B89A52]/40 bg-[#332C26] flex-shrink-0 shadow-sm">
+                <Image
+                  src="/assets/brand/shoplogo_circular.png"
+                  alt="ACR Cottons"
+                  fill
+                  sizes="40px"
+                  className="object-contain"
+                />
               </div>
               <div>
                 <h3 className="font-serif text-sm font-semibold text-[#332C26]">Atelier Concierge</h3>
-                <p className="text-[11px] text-[#6E6459] flex items-center">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
-                  Erode Weaving Desk • Online
+                <p className="text-[11px] text-[#6E6459] font-sans">
+                  Erode Weaving Desk • Mon–Fri, 8 AM–8 PM
                 </p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-[#6E6459] hover:text-[#332C26] p-1 transition"
+              className="text-[#6E6459] hover:text-[#332C26] p-1 transition cursor-pointer"
               aria-label="Close Concierge"
             >
               <X className="w-4 h-4" />
@@ -49,7 +55,7 @@ export function WhatsAppConcierge() {
             <MessageCircle className="w-4 h-4" />
             <span>Chat on WhatsApp</span>
           </a>
-          <p className="text-[10px] text-center text-[#6E6459] mt-2">
+          <p className="text-[10px] text-center text-[#6E6459] mt-2 font-sans">
             Store Hours: Mon–Fri, 8:00 AM – 8:00 PM IST
           </p>
         </div>
@@ -58,11 +64,10 @@ export function WhatsAppConcierge() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Open Atelier WhatsApp Concierge"
-        className="group relative flex items-center space-x-2.5 bg-[#332C26] text-[#F8F5EE] hover:bg-[#B89A52] p-3.5 sm:px-5 sm:py-3.5 rounded-full shadow-2xl transition-all duration-300 border border-[#B89A52]/30"
+        className="group relative flex items-center justify-center space-x-2 bg-[#332C26] text-[#F8F5EE] hover:bg-[#B89A52] px-4 py-3 sm:px-5 sm:py-3.5 rounded-full shadow-2xl transition-all duration-300 border border-[#B89A52]/30 cursor-pointer"
       >
-        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-        <MessageCircle className="w-5 h-5 text-[#B89A52] group-hover:text-[#F8F5EE] transition-colors" />
-        <span className="hidden sm:inline text-xs font-medium tracking-wider uppercase">
+        <MessageCircle className="w-4 h-4 text-[#B89A52] group-hover:text-[#F8F5EE] transition-colors flex-shrink-0" />
+        <span className="hidden sm:inline text-xs font-medium tracking-wider uppercase text-left leading-none">
           Atelier Concierge
         </span>
       </button>

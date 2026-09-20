@@ -35,7 +35,7 @@ export function FounderSection() {
             {/* Decorative Gold Accent Badge */}
             <div className="hidden sm:flex absolute -top-4 -left-4 bg-[#B89A52] text-[#F8F5EE] px-4 py-2 rounded-2xl shadow-lg items-center gap-2 text-xs font-semibold uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Surampatti Valasu Atelier</span>
+              <span>Bringing Designs You Desire to Life</span>
             </div>
           </div>
 

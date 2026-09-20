@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { X, Lock, Mail, Phone, User as UserIcon, Sparkles } from 'lucide-react';
 import { useStore } from '@/lib/store';
 
@@ -69,8 +70,14 @@ export function AuthModal() {
 
         {/* Brand Stamp */}
         <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-full bg-[#B89A52] text-[#F8F5EE] font-serif font-bold text-sm flex items-center justify-center mx-auto mb-3 shadow-md">
-            ACR
+          <div className="relative w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden shadow-md border-2 border-[#B89A52]/40 bg-[#332C26]">
+            <Image
+              src="/assets/brand/shoplogo_circular.png"
+              alt="ACR Cottons Logo"
+              fill
+              sizes="64px"
+              className="object-contain"
+            />
           </div>
           <h2 className="font-serif text-2xl text-[#332C26] font-normal">
             {mode === 'login' ? 'Patron Sign In' : 'Create Patron Account'}
