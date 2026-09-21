@@ -48,7 +48,7 @@ export function ShopHeader() {
                 <span className="text-[#B89A52]/40 select-none">•</span>
                 <span className="inline-flex items-center gap-1.5">
                   <Banknote className="w-3.5 h-3.5 text-[#B89A52] flex-shrink-0" />
-                  <span>Cash on Delivery (COD) Available</span>
+                  <span>Cash on Delivery Available</span>
                 </span>
               </div>
 

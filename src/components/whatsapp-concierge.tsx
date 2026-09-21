@@ -30,7 +30,7 @@ export function WhatsAppConcierge() {
               <div>
                 <h3 className="font-serif text-sm font-semibold text-[#332C26]">Atelier Concierge</h3>
                 <p className="text-[11px] text-[#6E6459] font-sans">
-                  Erode Weaving Desk • Mon–Fri, 8 AM–8 PM
+                  Erode Weaving Desk <br /> • Mon–Fri • 8 AM–8 PM
                 </p>
               </div>
             </div>
